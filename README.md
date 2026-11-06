@@ -1,80 +1,41 @@
-# Console Chess (C++)
+# Console Chess
 
-A console-based implementation of the classic **Chess game** developed in **C++**.  
-This project simulates a two-player chess match in the terminal while enforcing standard chess rules and board mechanics.
+A personal C++ experiment implementing a two-player chess variant in the Windows terminal, with a coloured board, piece movement checks, captures, and check-related logic.
 
-The goal of this project was to strengthen problem-solving skills, implement complex game logic, and practice **Object-Oriented Programming concepts in C++**.
+## Demonstration
 
----
+![Terminal demonstration](docs/images/demo.png)
 
-## Features
+A cropped frame from the owner's existing recording. It illustrates the original terminal interface, not a fresh end-to-end test of this revision. No audio is included. [Frame provenance](docs/DEMONSTRATION.md).
 
-- Full **8×8 chess board**
-- Turn-based gameplay
-- Legal move validation for each piece
-- Capturing mechanics
-- Check and checkmate detection
-- Text-based board visualization
-- Structured modular code
+## Gameplay and implementation
 
----
+Enter a source and destination using uppercase columns **A–H** and rows **1–8**, for example `A2` then `A3`. The source includes promotion choices and castling-related logic. These describe the implemented variant, not a claim of complete official chess-rule compliance. The existing rule variant is preserved; no AI opponent, GUI, or online play is included.
 
-## Technologies Used
+The implementation is procedural: functions operate on an integer-encoded 8×8 board. `PieceDesign.cpp` is a separate rendering experiment, not an additional source file to link into the game.
 
-- **C++**
-- **Object-Oriented Programming**
-- **2D Array Board Representation**
-- **Game Logic Algorithms**
+## Build and run on Windows
 
----
+The source uses `<windows.h>` and `<conio.h>` for terminal colours/input. Native Linux/macOS compilation is not claimed. Install Visual Studio with the Desktop development with C++ workload and CMake, then run:
 
-## How the Game Works
+```powershell
+cmake -S . -B build
+cmake --build build --config Release
+.\build\Release\console-chess.exe
+```
 
-1. The game starts with the standard chess board setup.
-2. Players take turns entering moves through the console.
-3. Each move is validated according to the rules of chess.
-4. Pieces move according to their standard movement patterns.
-5. The game continues until **checkmate** or termination.
+For a single-configuration generator the executable is directly under `build/`. Alternatively, from an x64 Visual Studio Developer Command Prompt:
 
----
+```bat
+cl /nologo /EHsc /std:c++17 /utf-8 Chess.cpp /Fe:console-chess.exe
+```
 
-## Example Board (Console Output)
-Will Attach later
+Use a wide terminal for the board/card rendering. Build only the entry source named above; compiling every `.cpp` together may include multiple `main` functions.
 
-Uppercase pieces represent **White**, lowercase represent **Black**.
+## Validation and limitations
 
----
+See [validation notes](docs/VALIDATION.md) for observed build/test results and known limitations. Build success does not establish every game rule as correct. Run focused tests with `cmake --build build --config Debug` and `ctest --test-dir build -C Debug --output-on-failure`. There is no hosted deployment.
 
-## How to Compile
+## Project context
 
-Using **g++**:
-
-Run the program:
-
----
-
-## Learning Objectives
-
-This project was built to practice:
-
-- Implementing **board-based games**
-- Managing **game states**
-- Designing **modular C++ programs**
-- Implementing rule-based systems
-
----
-
-## Future Improvements
-
-- AI opponent
-- Object Oriented Based
-- Graphical interface
-- Move history
-- Check detection improvements
-
----
-
-## Author
-
-**Syed Muhammad Rayyan Hasan**  
-BS Software Engineering – FAST NUCES
+Personal experimental project by Syed Muhammad Rayyan Hassan.

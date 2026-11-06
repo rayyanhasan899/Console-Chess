@@ -1,3 +1,4 @@
+#include "ConsoleInput.h"
 #include<iostream>
 #include<iomanip>
 #include<conio.h>
@@ -38,6 +39,7 @@ void setColor(int textColor, int bgColor)
 int main()
 {
 	intialize_Pieces();
+    return 0;
 }
 void intialize_Pieces()
 {
@@ -118,24 +120,8 @@ void Playturn(int pieces1[],int pieces2[],int board[][8])
 				cout<<current_Player;
 				cout<<" is Checked";
 			}
-			choice1=900;choice2=900;
-			char choice_1,choice_2;
-			while(choice1>9||choice1<0||choice_Number1>9||choice_Number1<0)
-			{
-				cout<<"\nWHICH BOX DO YOU WANT TO MOVE FROM: ";
-				cin>>choice_1;
-				cin>>choice_Number1;
-				choice1=static_cast<int>(choice_1)-65;
-			}
-			while(choice2>9||choice2<0||choice_Number2>9||choice_Number2<0)
-			{
-				cout<<"\nWHICH BOX DO YOU WANT TO MOVE TO: ";
-				cin>>choice_2;
-				cin>>choice_Number2;
-				choice2=static_cast<int>(choice_2)-65;
-			}
-			choice_Number2-=1;
-			choice_Number1-=1;
+            if (!readSquare(cin, cout, "\nWHICH BOX DO YOU WANT TO MOVE FROM: ", 8, choice1, choice_Number1) ||
+                !readSquare(cin, cout, "\nWHICH BOX DO YOU WANT TO MOVE TO: ", 8, choice2, choice_Number2)) return;
 			clearScreen();
 			int type=board[choice_Number1][choice1]%10;
 			int color=board[choice_Number1][choice1]/10;
@@ -158,8 +144,8 @@ void Playturn(int pieces1[],int pieces2[],int board[][8])
 			}
 			else if(type==5)
 			{
-				if(((choice2==choice1+2&&board[choice_Number1][choice1+1]==0&&board[choice_Number1][choice1+2]==0&&board[choice_Number1][choice1+3]==0)
-				||(choice2==choice1-2&&board[choice_Number1][choice1-1]==0&&board[choice_Number1][choice1-2]==0))
+				if(((choice1 <= 4&&choice2==choice1+2&&board[choice_Number1][choice1+1]==0&&board[choice_Number1][choice1+2]==0&&board[choice_Number1][choice1+3]==0)
+				||(choice1 >= 2&&choice2==choice1-2&&board[choice_Number1][choice1-1]==0&&board[choice_Number1][choice1-2]==0))
 				&&choice_Number1==choice_Number2&&color==current_Player&&((current_Player==1&&moving1==0)||(current_Player==2&&moving2==0)))
 				{
 					board[choice_Number2][choice2]=board[choice_Number1][choice1];
@@ -233,10 +219,13 @@ void Playturn(int pieces1[],int pieces2[],int board[][8])
 }
 bool isValid_Play(int choice1,int choice_Number1,int choice2,int choice_Number2,int current_Player,int board[][8])
 {
+    if (choice1 < 0 || choice1 >= 8 || choice2 < 0 || choice2 >= 8 ||
+        choice_Number1 < 0 || choice_Number1 >= 8 || choice_Number2 < 0 || choice_Number2 >= 8) return false;
+
 	int color=board[choice_Number1][choice1]/10;
 	int enemy_Color=board[choice_Number2][choice2]/10;
 	int piece_Type=board[choice_Number1][choice1]%10;
-	bool isValid;
+	bool isValid = false;
 	if(piece_Type!=0)
 	{
 		if(piece_Type==1)
@@ -324,7 +313,7 @@ bool isValid_Play(int choice1,int choice_Number1,int choice2,int choice_Number2,
 		}
 		else if(piece_Type==4||piece_Type==7)
 		{
-			bool inSide;
+			bool inSide = false;
 			int difference=choice_Number2-choice_Number1;
 			int diff=choice2-choice1;
 			(choice2-choice1<0)?diff*=-1:diff*=1;
@@ -380,7 +369,7 @@ bool isValid_Play(int choice1,int choice_Number1,int choice2,int choice_Number2,
 		}
 		else if(piece_Type==6)
 		{
-			bool inSide;
+			bool inSide = false;
 			int difference=choice_Number2-choice_Number1;
 			int diff=choice2-choice1;
 			(choice2-choice1<0)?diff*=-1:diff*=1;
@@ -859,7 +848,7 @@ void print_Board(int pieces1[],int pieces2[],int board[][8])
 }
 int check_White_King(int board[][8])
 {
-	int place;
+	int place = -1;
 	for(int i=0;i<8;i++)
 	{
 		for(int j=0;j<8;j++)
@@ -874,7 +863,7 @@ int check_White_King(int board[][8])
 }
 int check_Black_King(int board[][8])
 {
-	int place;
+	int place = -1;
 	for(int i=0;i<8;i++)
 	{
 		for(int j=0;j<8;j++)
@@ -889,7 +878,7 @@ int check_Black_King(int board[][8])
 }
 int check_Empty(int board[][8])
 {
-	int place;
+	int place = -1;
 	for(int i=0;i<8;i++)
 	{
 		for(int j=0;j<8;j++)
@@ -908,6 +897,8 @@ bool callCheck(int current_Player,int board[][8],int choice2,int choice_Number2)
 	int row_white=white_kingplace/10;
 	int column_white=white_kingplace%10;
 	int black_kingplace=check_Black_King(board);
+    if (white_kingplace < 0 || black_kingplace < 0) return true;
+    const bool targetInBounds = choice2 >= 0 && choice2 < 8 && choice_Number2 >= 0 && choice_Number2 < 8;
 	int row_black=black_kingplace/10;
 	int column_black = black_kingplace%10;
 	for(int i=0;i<8;i++)
@@ -918,7 +909,7 @@ bool callCheck(int current_Player,int board[][8],int choice2,int choice_Number2)
 			int type=board[i][j]%10;
 			if(current_Player==1)
 			{
-				if(board[choice_Number2][choice2]==15)
+				if(targetInBounds && board[choice_Number2][choice2]==15)
 				{
 					current_Player=2;
 				}
@@ -940,7 +931,7 @@ bool callCheck(int current_Player,int board[][8],int choice2,int choice_Number2)
 			}
 			else
 			{
-				if(board[choice_Number2][choice2]==25)
+				if(targetInBounds && board[choice_Number2][choice2]==25)
 				{
 					current_Player=1;
 				}
